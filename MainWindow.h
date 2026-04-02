@@ -34,31 +34,26 @@ private:
     void setupDashboard();
     void setupStats();
 
-    // --- KONTENERY GŁÓWNE (Struktura okna) ---
-    QTabWidget *m_tabs;            // Główny przełącznik zakładek (Dashboard / Statystyki)
-    QWidget    *m_dashboardPage;   // Strona z roślinką i aktualnymi danymi
-    QWidget    *m_statsPage;       // Strona, gdzie w Etapie 4 wstawisz wykresy
+  
+    QTabWidget *m_tabs;          
+    QWidget    *m_dashboardPage;  
+    QWidget    *m_statsPage;     
 
-    // --- WIDŻETY DANYCH (Prawa strona - Liczniki LCD) ---
-    // Używamy QLCDNumber dla "technicznego" wyglądu
-    QLCDNumber *m_tempLCD;         // Wyświetlacz temperatury [°C]
-    QLCDNumber *m_presLCD;         // Wyświetlacz ciśnienia [hPa]
-    QLCDNumber *m_luxLCD;          // Wyświetlacz natężenia światła [lx]
-    QLCDNumber *m_soilLCD;          // Wyświetlacz wilgotności gleby [%]
+    QLCDNumber *m_tempLCD;     
+    QLCDNumber *m_presLCD; 
+    QLCDNumber *m_luxLCD;         
+    QLCDNumber *m_soilLCD;        
+    QLabel *m_sunIcon;           
+    QLabel *m_waterIcon;          
+    QLabel *m_thermometerIcon;    
+    QLabel *m_pressureIcon;       
+    QLabel *m_plantWidget;        
 
-    // --- WIDŻETY WIZUALNE (Lewa strona - Ikony/Grafiki) ---
-    // QLabel służy tu jako kontener na obrazki (QPixmap)
-    QLabel *m_sunIcon;             // Ikona słońca (będzie zmieniać jasność w GuiEffects)
-    QLabel *m_waterIcon;            // Ikona kropli (może pulsować, gdy sucho)
-    QLabel *m_thermometerIcon;     // Statyczna lub animowana ikona termometru
-    QLabel *m_pressureIcon;        // Ikona barometru/ciśnienia
+    QLabel *m_plantAvatar;
 
-    // --- CENTRUM (Środek - Serce systemu) ---
-    QLabel *m_plantWidget;         // Główna grafika roślinki (nasz "Avatar" stanu rośliny)
 
-    // --- LOGIKA I DANE ---
-    SerialHandler *serialManager; ///< Menadżer komunikacji szeregowej.
-    PlantData *plantData;        ///< Wskaźnik na obiekt przechowujący dane rośliny.
+    SerialHandler *serialManager; 
+    PlantData *plantData;        
     
 };
 

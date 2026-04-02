@@ -40,48 +40,54 @@ void MainWindow::setupDashboard() {
     m_soilLCD->setSegmentStyle(QLCDNumber::Flat);
 
     m_sunIcon = new QLabel;
-    m_sunIcon->setPixmap(QPixmap(":/icons/sun.png").scaled(64, 64, Qt::KeepAspectRatio));
+    m_sunIcon->setPixmap(QPixmap("../icons/sun.png").scaled(64, 64, Qt::KeepAspectRatio));
     m_waterIcon = new QLabel;
-    m_waterIcon->setPixmap(QPixmap(":/icons/water.png").scaled(64, 64, Qt::KeepAspectRatio));
+    m_waterIcon->setPixmap(QPixmap("../icons/water.png").scaled(64, 64, Qt::KeepAspectRatio));
     m_thermometerIcon = new QLabel;
-    m_thermometerIcon->setPixmap(QPixmap(":/icons/thermometer.png").scaled(64, 64, Qt::KeepAspectRatio));
+    m_thermometerIcon->setPixmap(QPixmap("../icons/thermometer.png").scaled(64, 64, Qt::KeepAspectRatio));
     m_pressureIcon = new QLabel;
-    m_pressureIcon->setPixmap(QPixmap(":/icons/pressure.png").scaled(64, 64, Qt::KeepAspectRatio));
+    m_pressureIcon->setPixmap(QPixmap("../icons/pressure.png").scaled(64, 64, Qt::KeepAspectRatio));
     
     m_plantWidget = new QLabel;
-    m_plantWidget->setPixmap(QPixmap(":/images/plant_ok.png").scaled(256, 256, Qt::KeepAspectRatio));
+    m_plantWidget->setPixmap(QPixmap("../images/plant_ok.png").scaled(256, 256, Qt::KeepAspectRatio));
     m_plantWidget->setAlignment(Qt::AlignCenter);
 
     m_dashboardPage = new QWidget();
     QGridLayout *layout = new QGridLayout(m_dashboardPage);
-    //kolumna 1
-    layout->addWidget(m_thermometerIcon, 0, 0);
-    layout->addWidget(m_pressureIcon,    1, 0);
-    layout->addWidget(m_sunIcon,         2, 0);
-    layout->addWidget(m_waterIcon,       3, 0);
 
-    //kolumna 2
-    layout->addWidget(m_plantWidget, 0, 1, 4, 1); 
-    //kolumna 3
-    QLabel *tempLabel = new QLabel("TEMPERATURA[°C]:");
-    tempLabel->setStyleSheet("font-weight: bold; color: #1e2222;");
-    layout->addWidget(tempLabel, 0, 2);
+    
+    //layout->addWidget(m_plantWidget, 0, 1, 4, 1); 
+    
+    // Kolumna 0: IKONY | Kolumna 1: ROŚLINA | Kolumna 2: OPISY I LCD
+
+   
+    layout->addWidget(m_thermometerIcon, 0, 0, 2, 1, Qt::AlignCenter);
+    layout->addWidget(new QLabel("TEMPERATURA [°C]:"), 0, 2);
     layout->addWidget(m_tempLCD, 1, 2);
 
-    QLabel *presLabel = new QLabel("CIŚNIENIE[hPa]:");
-    presLabel->setStyleSheet("font-weight: bold; color: #1e2222;");
-    layout->addWidget(presLabel, 2, 2);
+
+    layout->addWidget(m_pressureIcon, 2, 0, 2, 1, Qt::AlignCenter);
+    layout->addWidget(new QLabel("CIŚNIENIE [hPa]:"), 2, 2);
     layout->addWidget(m_presLCD, 3, 2);
+
     
-    QLabel *luxLabel = new QLabel("ŚWIATŁO[lx]:");
-    luxLabel->setStyleSheet("font-weight: bold; color: #1e2222;");
-    layout->addWidget(luxLabel, 4, 2);
-    layout->addWidget(m_luxLCD,  5, 2);
-    
-    QLabel *soilLabel = new QLabel("GLEBA[%]:");
-    soilLabel->setStyleSheet("font-weight: bold; color: #1e2222;");
-    layout->addWidget(soilLabel, 6, 2);
+    layout->addWidget(m_sunIcon, 4, 0, 2, 1, Qt::AlignCenter);
+    layout->addWidget(new QLabel("ŚWIATŁO [lx]:"), 4, 2);
+    layout->addWidget(m_luxLCD, 5, 2);
+
+   
+    layout->addWidget(m_waterIcon, 6, 0, 2, 1, Qt::AlignCenter);
+    layout->addWidget(new QLabel("GLEBA [%]:"), 6, 2);
     layout->addWidget(m_soilLCD, 7, 2);
+
+   
+    m_plantAvatar = new QLabel(this);
+    m_plantAvatar->setPixmap(QPixmap("../icons/plant_ok.png").scaled(256, 256, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    layout->addWidget(m_plantAvatar, 0, 1, 8, 1, Qt::AlignCenter); 
+
+    layout->setColumnStretch(0, 1);
+    layout->setColumnStretch(1, 4); 
+    layout->setColumnStretch(2, 2); 
 
     m_tabs->addTab(m_dashboardPage, tr("Dashboard"));
 
