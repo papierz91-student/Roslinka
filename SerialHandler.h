@@ -31,7 +31,7 @@ signals:
 
 private:
     void parseLine(const QString &line); 
-    PlantData *  m_internalData;        
+    PlantData *m_internalData;        
 
 private slots:
     /**

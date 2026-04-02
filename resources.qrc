@@ -1,0 +1,8 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource prefix="/">
+    <file>icons/sun.png</file>
+    <file>icons/water.png</file>
+    <file>icons/thermometer.png</file>
+    <file>icons/pressure.png</file>
+    <file>images/plant_ok.png</file> </qresource>
+</RCC>

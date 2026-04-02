@@ -9,8 +9,8 @@ add_executable(ArduinoMonitor
     main.cpp
     MainWindow.cpp
     SerialHandler.cpp
+    resources.qrc 
 )
-
 find_package(Qt6 REQUIRED COMPONENTS Widgets SerialPort)
 target_link_libraries(ArduinoMonitor PRIVATE 
     Qt6::Widgets 
