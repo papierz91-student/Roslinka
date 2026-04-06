@@ -16,7 +16,7 @@ MainWindow::MainWindow(PlantData *data, QWidget *parent)
 
     connect(serialManager, &SerialHandler::dataUpdated, this, &MainWindow::updateDisplay);
 
-    if (!serialManager->openPort("ttyACM0")) {
+    if (!serialManager->openPort(" /dev/ttyACM0")) {
     
         statusBar()->showMessage("BŁĄD: Brak połączenia z ttyACM0 (Arduino)", 5000);
         statusBar()->setStyleSheet("color: red; font-weight: bold;");
