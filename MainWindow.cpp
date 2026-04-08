@@ -44,12 +44,12 @@ void MainWindow::setupDashboard() {
     m_waterIcon = new QLabel;
     m_waterIcon->setPixmap(QPixmap("../icons/water.png").scaled(64, 64, Qt::KeepAspectRatio));
     m_thermometerIcon = new QLabel;
-    m_thermometerIcon->setPixmap(QPixmap("../icons/thermometer.png").scaled(64, 64, Qt::KeepAspectRatio));
+    m_thermometerIcon->setPixmap(QPixmap("../icons/termometer.png").scaled(64, 64, Qt::KeepAspectRatio));
     m_pressureIcon = new QLabel;
     m_pressureIcon->setPixmap(QPixmap("../icons/pressure.png").scaled(64, 64, Qt::KeepAspectRatio));
     
     m_plantWidget = new QLabel;
-    m_plantWidget->setPixmap(QPixmap("../images/plant_ok.png").scaled(256, 256, Qt::KeepAspectRatio));
+    m_plantWidget->setPixmap(QPixmap("../icons/plant_ok.png").scaled(256, 256, Qt::KeepAspectRatio));
     m_plantWidget->setAlignment(Qt::AlignCenter);
 
     m_dashboardPage = new QWidget();

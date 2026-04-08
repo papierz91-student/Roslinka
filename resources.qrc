@@ -4,6 +4,6 @@
         <file>icons/sun.png</file>
         <file>icons/termometer.png</file>
         <file>icons/water.png</file>
-        <file>images/plant_ok.png</file>
+        <file>icons/plant_ok.png</file>
     </qresource>
 </RCC>
