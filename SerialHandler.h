@@ -4,46 +4,60 @@
 #include <QObject>
 #include <QSerialPort>
 #include "PlantData.h"
+
 /**
  * @class SerialHandler
  * @brief Klasa obsługująca komunikację przez port szeregowy (RS-232/USB).
- * * Odpowiada za nawiązanie połączenia z mikrokontrolerem Arduino, 
- * buforowanie przychodzących bajtów i składanie ich w kompletne linie tekstu.
+ * * Odpowiada za nawiązanie połączenia z mikrokontrolerem (np. Arduino), 
+ * buforowanie przychodzących bajtów, składanie ich w kompletne linie tekstu
+ * oraz aktualizację modelu danych.
  */
 class SerialHandler : public QObject {
     Q_OBJECT
 public:
     /**
      * @brief Konstruktor klasy SerialHandler.
-     * @param parent Wskaźnik na obiekt nadrzędny Qt.
+     * @param model Wskaźnik na obiekt PlantData, który będzie aktualizowany danymi z portu.
+     * @param parent Wskaźnik na obiekt nadrzędny Qt (zarządzanie pamięcią).
      */
     explicit SerialHandler(PlantData *model, QObject *parent = nullptr);
 
     /**
-     * @brief Otwiera port szeregowy o podanej nazwie.
-     * @param portName Nazwa portu (np. "ttyACM0" na Linux lub "COM3" na Windows).
-     * @return true jeśli udało się otworzyć port, false w przeciwnym razie.
+     * @brief Konfiguruje i otwiera port szeregowy o podanej nazwie.
+     * * Ustawia parametry transmisji (np. BaudRate 9600, 8N1).
+     * @param portName Nazwa systemowa portu (np. "ttyACM0" na Linux lub "COM3" na Windows).
+     * @return true jeśli udało się poprawnie otworzyć i skonfigurować port, false w przeciwnym razie.
      */
     bool openPort(const QString &portName);
 
 signals:
+    /**
+     * @brief Sygnał emitowany po pomyślnym sparsowaniu nowej porcji danych.
+     * * Informuje inne komponenty (np. MainWindow), że stan obiektu PlantData uległ zmianie.
+     */
     void dataUpdated();
 
 private:
+    /**
+     * @brief Interpretuje surowy ciąg znaków i aktualizuje pola w m_internalData.
+     * * Przetwarza ramkę danych (np. format tekstowy lub JSON) na wartości liczbowe.
+     * @param line Pełna linia tekstu odebrana z portu szeregowego.
+     */
     void parseLine(const QString &line); 
-    PlantData *m_internalData;        
+
+    PlantData *m_internalData;  ///< Wskaźnik do współdzielonego modelu danych rośliny.
 
 private slots:
     /**
-     * @brief Slot obsługujący zdarzenie gotowości danych do odczytu (readyRead).
-     * * Odczytuje surowe bajty z portu, dodaje je do bufora i sprawdza, 
-     * czy w buforze znajduje się znak końca linii (\n).
+     * @brief Slot obsługujący zdarzenie readyRead() z QSerialPort.
+     * * Odczytuje surowe bajty z portu, dołącza je do wewnętrznego bufora
+     * i wyszukuje znaki końca linii, aby wyodrębnić pełne komunikaty.
      */
     void readData();
 
 private:
-    QSerialPort *serial; ///< Obiekt niskopoziomowej obsługi portu Qt.
-    QByteArray buffer;   ///< Bufor przechowujący niekompletne fragmenty odebranych danych.
+    QSerialPort *serial; ///< Obiekt Qt odpowiedzialny za sprzętową obsługę portu.
+    QByteArray buffer;   ///< Bufor przechowujący fragmenty danych czekające na przetworzenie.
 };
 
-#endif
+#endif // SERIALHANDLER_H
