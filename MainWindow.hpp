@@ -3,8 +3,8 @@
 
 #include <QMainWindow>
 #include <QLabel>
-#include "SerialHandler.h"
-#include "PlantData.h"
+#include "SerialHandler.hpp"
+#include "PlantData.hpp"
 #include <QLCDNumber>
 #include <QTabWidget>
 

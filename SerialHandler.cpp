@@ -1,4 +1,4 @@
-#include "SerialHandler.h"
+#include "SerialHandler.hpp"
 #include <QDebug>
 
 SerialHandler::SerialHandler(PlantData *model, QObject *parent) 

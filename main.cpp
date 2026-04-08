@@ -1,6 +1,6 @@
 #include <QApplication>
-#include "MainWindow.h"
-#include "PlantData.h"
+#include "MainWindow.hpp"
+#include "PlantData.hpp"
 
 int main(int argc, char *argv[]) {
     PlantData myPlant;

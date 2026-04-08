@@ -3,7 +3,7 @@
 
 #include <QObject>
 #include <QSerialPort>
-#include "PlantData.h"
+#include "PlantData.hpp"
 
 /**
  * @class SerialHandler
