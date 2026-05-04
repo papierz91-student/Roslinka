@@ -7,6 +7,7 @@
 #include "PlantData.hpp"
 #include <QLCDNumber>
 #include <QTabWidget>
+#include <QResizeEvent> // ✅ dodane
 
 /**
  * @class MainWindow
@@ -33,6 +34,9 @@ public slots:
      */
     void updateDisplay();
 
+protected:
+    void resizeEvent(QResizeEvent *event) override; // ✅ dodane
+
 private:
     /**
      * @brief Konfiguruje główny panel kontrolny (Dashboard).
@@ -46,37 +50,41 @@ private:
      */
     void setupStats();
 
+    QLabel* createStyledLabel(const QString &text); // ✅ helper
+
     /** @name Elementy struktury okna */
     ///@{
-    QTabWidget *m_tabs;           ///< Kontener kart (Dashboard / Statystyki).
-    QWidget    *m_dashboardPage;   ///< Strona główna z aktualnymi odczytami.
-    QWidget    *m_statsPage;       ///< Strona z wykresami i statystykami.
+    QTabWidget *m_tabs;           
+    QWidget    *m_dashboardPage;  
+    QWidget    *m_statsPage;      
     ///@}
 
     /** @name Wyświetlacze numeryczne */
     ///@{
-    QLCDNumber *m_tempLCD;        ///< Wyświetlacz temperatury.
-    QLCDNumber *m_presLCD;        ///< Wyświetlacz ciśnienia.
-    QLCDNumber *m_luxLCD;         ///< Wyświetlacz natężenia światła.
-    QLCDNumber *m_soilLCD;        ///< Wyświetlacz wilgotności gleby.
+    QLCDNumber *m_tempLCD;        
+    QLCDNumber *m_presLCD;        
+    QLCDNumber *m_luxLCD;         
+    QLCDNumber *m_soilLCD;        
     ///@}
 
     /** @name Elementy graficzne i ikony statusu */
     ///@{
-    QLabel *m_sunIcon;            ///< Ikona nasłonecznienia.
-    QLabel *m_waterIcon;          ///< Ikona nawodnienia (podlewania).
-    QLabel *m_thermometerIcon;    ///< Ikona termometru.
-    QLabel *m_pressureIcon;       ///< Ikona barometru.
-    QLabel *m_plantWidget;        ///< Widget graficzny reprezentujący roślinę.
-    QLabel *m_plantAvatar;        ///< Grafika ośliny.
+    QLabel *m_sunIcon;            
+    QLabel *m_waterIcon;          
+    QLabel *m_thermometerIcon;    
+    QLabel *m_pressureIcon;       
+    QLabel *m_plantWidget;        
+    QLabel *m_plantAvatar;        
     ///@}
 
     /** @name Moduły logiczne */
     ///@{
-    SerialHandler *serialManager; ///< Menadżer komunikacji przez port szeregowy.
-    PlantData *plantData;         ///< Wskaźnik do modelu danych rośliny.
+    SerialHandler *serialManager; 
+    PlantData *plantData;         
     ///@}
-    
+
+    QWidget* createCard(const QString &title, QLabel *icon, QLabel *value);
+    QPixmap sunPixmap, waterPixmap, thermoPixmap, pressurePixmap, plantPixmap;
 };
 
 #endif // MAINWINDOW_H
