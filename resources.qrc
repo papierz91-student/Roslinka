@@ -5,5 +5,10 @@
         <file>icons/termometer.png</file>
         <file>icons/water.png</file>
         <file>icons/plant_ok.png</file>
+        <file>icons/plant_hot.png</file>
+        <file>icons/plant_cold.png</file>
+        <file>icons/plant_dry.png</file>
+        <file>icons/plant_wet.png</file>
+        <file>icons/plant_dark.png</file>
     </qresource>
 </RCC>

@@ -16,3 +16,6 @@ target_link_libraries(ArduinoMonitor PRIVATE
     Qt6::Widgets 
     Qt6::SerialPort
 )
+
+find_package(Qt6 REQUIRED COMPONENTS Charts)
+target_link_libraries(ArduinoMonitor PRIVATE Qt6::Charts)
