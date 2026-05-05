@@ -1,75 +1,99 @@
+/**
+ * @file PlantData.hpp
+ * @brief Definicja klasy modelu danych pomiarowych.
+ * @author Michał Papierzański
+ * @date 2026-05-05
+ */
+
 #ifndef PLANTDATA_H
 #define PLANTDATA_H
 
 /**
  * @class PlantData
- * @brief Klasa reprezentująca zestaw danych pomiarowych z czujników monitorujących roślinę.
- * * Klasa przechowuje informacje o warunkach atmosferycznych oraz stanie podłoża,
- * udostępniając interfejs do zapisu i odczytu tych parametrów.
+ * @brief Model danych przechowujący parametry życiowe rośliny pobrane z sensorów.
+ * 
+ * Klasa stanowi centralny punkt składowania danych w aplikacji. Jest obiektem 
+ * współdzielonym ("data container"), do którego SerialHandler zapisuje nowe wartości, 
+ * a MainWindow odczytuje je w celu aktualizacji interfejsu graficznego.
+ * 
+ * @note Klasa nie zawiera logiki biznesowej, służy jedynie jako bezpieczny kontener 
+ * dla surowych i przeliczonych wartości pomiarowych.
  */
 class PlantData {
 public:
-    /** @name Zasoby systemowe (Pola danych) */
-    ///@{
-    double temperature;   ///< Aktualna temperatura [°C].
-    double pressure;      ///< Aktualne ciśnienie atmosferyczne [hPa].
-    double lux;           ///< Natężenie światła [lx].
-    int soilMoisture;     ///< Wilgotność gleby [%].        
-    ///@}
-
     /**
      * @brief Konstruktor domyślny.
-     * Inicjalizuje wszystkie parametry wartościami zerowymi.
+     * 
+     * Inicjalizuje wszystkie parametry numeryczne wartościami bezpiecznymi (0.0 lub 0),
+     * co zapobiega wyświetlaniu nieokreślonych wartości przed odebraniem pierwszej ramki danych.
      */
     PlantData() : temperature(0.0), pressure(0.0), lux(0.0), soilMoisture(0) {}
 
+    /** @name Sety (Metody modyfikujące)
+     * Metody wykorzystywane głównie przez SerialHandler do aktualizacji modelu.
+     */
+    ///@{
+    
     /**
-     * @brief Ustawia nową wartość temperatury.
-     * @param temp Temperatura w stopniach Celsjusza.
+     * @brief Aktualizuje wartość temperatury.
+     * @param temp Temperatura otoczenia w stopniach Celsjusza [°C].
      */
     void set_Temperature(double temp) { temperature = temp; }
 
     /**
-     * @brief Ustawia nową wartość ciśnienia.
-     * @param pres Ciśnienie atmosferyczne w hektopaskalach [hPa].
+     * @brief Aktualizuje wartość ciśnienia.
+     * @param pres Ciśnienie atmosferyczne [hPa].
      */
     void set_Pressure(double pres) { pressure = pres; }
 
     /**
-     * @brief Ustawia nową wartość natężenia światła.
-     * @param light Natężenie światła w luksach [lx].
+     * @brief Aktualizuje natężenie światła.
+     * @param light Wartość natężenia w luksach [lx].
      */
     void set_Lux(double light) { lux = light; }
 
     /**
-     * @brief Ustawia nową wartość wilgotności gleby.
-     * @param moisture Wilgotność gleby wyrażona w procentach [0-100].
+     * @brief Aktualizuje poziom wilgotności podłoża.
+     * @param moisture Procentowa wilgotność gleby [0-100].
      */
     void set_SoilMoisture(int moisture) { soilMoisture = moisture; }
+    ///@}
+
+    /** @name Gety (Metody dostępowe)
+     * Metody wykorzystywane przez interfejs użytkownika oraz moduł archiwizacji danych.
+     */
+    ///@{
 
     /**
-     * @brief Pobiera aktualną temperaturę.
-     * @return Wartość temperatury w [°C].
+     * @brief Zwraca ostatnio zarejestrowaną temperaturę.
+     * @return double Wartość w [°C].
      */
     double get_Temperature() const { return temperature; }
 
     /**
-     * @brief Pobiera aktualne ciśnienie.
-     * @return Wartość ciśnienia w [hPa].
+     * @brief Zwraca ostatnio zarejestrowane ciśnienie.
+     * @return double Wartość w [hPa].
      */
     double get_Pressure() const { return pressure; }
 
     /**
-     * @brief Pobiera aktualne natężenie światła.
-     * @return Wartość natężenia światła w [lx].
+     * @brief Zwraca ostatnio zarejestrowane natężenie światła.
+     * @return double Wartość w [lx].
      */
     double get_Lux() const { return lux; }
 
     /**
-     * @brief Pobiera aktualną wilgotność gleby.
-     * @return Procentowa wilgotność gleby [%].
+     * @brief Zwraca ostatnio zarejestrowaną wilgotność gleby.
+     * @return int Procentowa zawartość wody w podłożu.
      */
     int get_SoilMoisture() const { return soilMoisture; } 
+    ///@}
+
+private:
+    double temperature;   /**< Temperatura bieżąca [°C]. */
+    double pressure;      /**< Ciśnienie atmosferyczne [hPa]. */
+    double lux;           /**< Natężenie światła padającego [lx]. */
+    int soilMoisture;     /**< Wilgotność gleby (wartość zmapowana na procenty). */
 };
 
 #endif // PLANTDATA_H

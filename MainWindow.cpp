@@ -48,10 +48,10 @@ MainWindow::MainWindow(PlantData *data, QWidget *parent)
     setupStats();   
     loadHistoryFromCSV();
 
-    // Archiwizacja co 60 sekund
-    archiveTimer = new QTimer(this);
-    connect(archiveTimer, &QTimer::timeout, this, &MainWindow::saveToArchive);
-    archiveTimer->start(60000);
+    // // Archiwizacja co 10 sekund
+    // archiveTimer = new QTimer(this);
+    // connect(archiveTimer, &QTimer::timeout, this, &MainWindow::saveToArchive);
+    // archiveTimer->start(10000);
 
     // Serial Port
     serialManager = new SerialHandler(plantData, this);
@@ -72,7 +72,7 @@ QWidget* MainWindow::createCard(const QString &title, QLabel *icon, QLabel *valu
     QVBoxLayout *layout = new QVBoxLayout(card);
 
     QLabel *titleLabel = new QLabel(title.toUpper());
-    titleLabel->setObjectName("cardTitle"); // TO JEST KLUCZOWE
+    titleLabel->setObjectName("cardTitle");
     titleLabel->setAlignment(Qt::AlignCenter);
     titleLabel->setStyleSheet("color: #888; font-weight: bold; border: none; background: transparent;");
 
@@ -93,7 +93,6 @@ void MainWindow::setupDashboard() {
     QVBoxLayout *mainVLayout = new QVBoxLayout(m_dashboardPage);
     mainVLayout->setContentsMargins(20, 20, 20, 20);
 
-    // Pasek górny dla przycisku (niezależny od siatki kart)
     QHBoxLayout *topBar = new QHBoxLayout();
     m_langBtn = new QPushButton("PL / EN");
     m_langBtn->setFixedSize(80, 30);
@@ -103,11 +102,10 @@ void MainWindow::setupDashboard() {
     );
     connect(m_langBtn, &QPushButton::clicked, this, &MainWindow::toggleLanguage);
     
-    topBar->addStretch(); // Pcha przycisk do prawej krawędzi
+    topBar->addStretch(); 
     topBar->addWidget(m_langBtn);
     mainVLayout->addLayout(topBar);
 
-    // Siatka dla ikon i kart
     QGridLayout *gridLayout = new QGridLayout();
     gridLayout->setSpacing(30);
 
@@ -122,7 +120,7 @@ void MainWindow::setupDashboard() {
     QLabel *luxValue  = new QLabel("--"); luxValue->setObjectName("luxValue");
     QLabel *soilValue = new QLabel("--"); soilValue->setObjectName("soilValue");
 
-    // Rozmieszczenie w siatce
+
     gridLayout->addWidget(m_thermometerIcon, 0, 0, Qt::AlignCenter);
     gridLayout->addWidget(createCard("TEMPERATURE", nullptr, tempValue), 0, 2);
 
@@ -223,13 +221,13 @@ void MainWindow::updateDisplay() {
     double l = plantData->get_Lux();
     int soilPercent = std::clamp((626 - plantData->get_SoilMoisture()) * 100 / (626 - 347), 0, 100);
 
-    // Definicja stylów CSS dla ułatwienia
+ 
     QString styleNormal = "color: #39FF14; font-weight: bold; border: none; background: transparent;"; // Zielony
     QString styleHot    = "color: #FF3131; font-weight: bold; border: none; background: transparent;"; // Czerwony (za wysoko)
     QString styleCold   = "color: #00FFFF; font-weight: bold; border: none; background: transparent;"; // Jasnoniebieski (za nisko)
     QString styleDark   = "color: #FFA500; font-weight: bold; border: none; background: transparent;"; // Pomarańczowy (za ciemno)
 
-    // 1. TEMPERATURA (Przykładowo: 18°C - 28°C)
+  
     if (QLabel *lTemp = m_dashboardPage->findChild<QLabel*>("tempValue")) {
         lTemp->setText(QString::number(t, 'f', 1) + " °C");
         if (t > 28.0) lTemp->setStyleSheet(styleHot);
@@ -237,23 +235,23 @@ void MainWindow::updateDisplay() {
         else lTemp->setStyleSheet(styleNormal);
     }
 
-    // 2. WILGOTNOŚĆ (Przykładowo: 30% - 80%)
+   
     if (QLabel *lSoil = m_dashboardPage->findChild<QLabel*>("soilValue")) {
         lSoil->setText(QString::number(soilPercent) + " %");
-        if (soilPercent > 80) lSoil->setStyleSheet(styleHot); // Za mokro
-        else if (soilPercent < 30) lSoil->setStyleSheet(styleCold); // Za sucho
+        if (soilPercent > 80) lSoil->setStyleSheet(styleHot); 
+        else if (soilPercent < 30) lSoil->setStyleSheet(styleCold); 
         else lSoil->setStyleSheet(styleNormal);
     }
 
-    // 3. ŚWIATŁO (Przykładowo: 100 lx - 1000 lx)
+ 
     if (QLabel *lLux = m_dashboardPage->findChild<QLabel*>("luxValue")) {
         lLux->setText(QString::number(l, 'f', 0) + " lx");
-        if (l > 1000.0) lLux->setStyleSheet(styleHot); // Za ostre słońce
-        else if (l < 100.0) lLux->setStyleSheet(styleDark); // Za ciemno
+        if (l > 1000.0) lLux->setStyleSheet(styleHot); 
+        else if (l < 100.0) lLux->setStyleSheet(styleDark); 
         else lLux->setStyleSheet(styleNormal);
     }
 
-    // 4. CIŚNIENIE (Zostawiamy normalne, chyba że też chcesz limity)
+
     if (QLabel *lPres = m_dashboardPage->findChild<QLabel*>("presValue")) {
         lPres->setText(QString::number(p, 'f', 0) + " hPa");
         lPres->setStyleSheet(styleNormal);
@@ -261,7 +259,7 @@ void MainWindow::updateDisplay() {
 
     updateGraphics();
 
-    // Logika wykresów (co 10 sekund)
+  
     static qint64 lastUpdateTime = 0;
     qint64 currentTime = QDateTime::currentMSecsSinceEpoch();
     if (currentTime - lastUpdateTime >= 10000) { 
@@ -270,6 +268,8 @@ void MainWindow::updateDisplay() {
         for(int i = 0; i < 4; ++i) {
             if (m_series[i]) m_series[i]->append(currentTime, vals[i]);
         }
+
+        saveToArchive();
         if (m_series[0]->count() > 1) {
             qint64 firstTs = m_series[0]->points().first().x() / 1000;
             qint64 lastTs = m_series[0]->points().last().x() / 1000;
@@ -282,7 +282,7 @@ void MainWindow::updateDisplay() {
 }
 
 void MainWindow::updateChartsWindow() {
-    const int windowSizeSec = 900; // 15 min
+    const int windowSizeSec = 900;
     qint64 endSec = m_chartScroll->value();
     QDateTime endTime = QDateTime::fromMSecsSinceEpoch(endSec * 1000);
     QDateTime startTime = endTime.addSecs(-windowSizeSec);
@@ -290,7 +290,6 @@ void MainWindow::updateChartsWindow() {
     for(int i = 0; i < 4; ++i) {
         if (m_axesX[i]) m_axesX[i]->setRange(startTime, endTime);
         
-        // Skalowanie Y do widocznych punktów
         double minV = 99999, maxV = -99999;
         bool found = false;
         for(auto pt : m_series[i]->points()) {
@@ -325,10 +324,10 @@ void MainWindow::updateGraphics() {
     int avatarSize = std::max(250, width() / 3);
     m_plantAvatar->setPixmap(avatar->scaled(avatarSize, avatarSize, Qt::KeepAspectRatio, Qt::SmoothTransformation));
 
-    // Ikony (Termometr, Kropla, Słońce)
+   
     int baseSize = std::max(64, width() / 15);
     
-    // Termometr z kolorem dynamicznym
+   
     if (!thermoPixmap.isNull()) {
         QPixmap tPix = thermoPixmap.scaled(baseSize, baseSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
         QPixmap tCol(tPix.size()); tCol.fill(Qt::transparent);
@@ -344,7 +343,7 @@ void MainWindow::updateGraphics() {
 
     if (!pressurePixmap.isNull()) m_pressureIcon->setPixmap(pressurePixmap.scaled(baseSize, baseSize, Qt::KeepAspectRatio, Qt::SmoothTransformation));
     if (!waterPixmap.isNull() && m_waterIcon) {
-    // Kropelka rośnie wraz z wilgotnością (od 0.7x do 1.5x bazowego rozmiaru)
+
     double scaleFactor = 0.7 + (soilPercent / 100.0) * 0.8; 
     int dynamicSize = static_cast<int>(baseSize * scaleFactor);
     
@@ -421,15 +420,14 @@ void MainWindow::saveToArchive() {
 void MainWindow::resizeEvent(QResizeEvent *event) {
     QMainWindow::resizeEvent(event);
 
-    // Obliczanie rozmiarów czcionek na podstawie szerokości okna
+  
     int baseWidth = width();
-    int valueFontSize = std::clamp(baseWidth / 35, 18, 45); // Duże cyfry
-    int titleFontSize = std::clamp(baseWidth / 80, 10, 18); // Napisy nad cyframi
+    int valueFontSize = std::clamp(baseWidth / 35, 18, 45);
+    int titleFontSize = std::clamp(baseWidth / 80, 10, 18); 
 
     QFont vFont; vFont.setPixelSize(valueFontSize); vFont.setBold(true);
     QFont tFont; tFont.setPixelSize(titleFontSize); tFont.setBold(true);
 
-    // Aplikowanie do wartości (cyfr)
     QStringList values = {"tempValue", "presValue", "luxValue", "soilValue"};
     for (const QString &name : values) {
         if (QLabel *l = m_dashboardPage->findChild<QLabel*>(name)) {
@@ -437,35 +435,34 @@ void MainWindow::resizeEvent(QResizeEvent *event) {
         }
     }
 
-    // Aplikowanie do tytułów kart
+    
     QList<QLabel*> titles = m_dashboardPage->findChildren<QLabel*>("cardTitle");
     for (QLabel* l : titles) {
         l->setFont(tFont);
     }
     
-    updateGraphics(); // Odświeżenie rozmiarów ikon i awatara
+    updateGraphics(); 
 }
 
 void MainWindow::toggleLanguage() {
     static bool isEn = true;
     isEn = !isEn;
 
-    // Pobieramy wszystkie tytuły kart na dashboardzie
+
     QList<QLabel*> titles = m_dashboardPage->findChildren<QLabel*>("cardTitle");
 
     if (isEn) {
         m_tabs->setTabText(0, "Main Screen");
         m_tabs->setTabText(1, "Statistics");
         if(m_clearBtn) m_clearBtn->setText("CLEAR HISTORY");
-        
-        // Tłumaczenie tytułów wykresów
+
         if(m_charts[0]) m_charts[0]->setTitle("Temperature [°C]");
         if(m_charts[1]) m_charts[1]->setTitle("Moisture [%]");
         if(m_charts[2]) m_charts[2]->setTitle("Light [lx]");
         if(m_charts[3]) m_charts[3]->setTitle("Pressure [hPa]");
 
         for(auto t : titles) {
-            QString txt = t->text().toUpper(); // Poprawione na toUpper()
+            QString txt = t->text().toUpper(); 
             if(txt.contains("TEMPERATUR")) t->setText("TEMPERATURE");
             else if(txt.contains("CIŚNIENIE") || txt.contains("PRESS")) t->setText("PRESSURE");
             else if(txt.contains("JASNOŚĆ") || txt.contains("BRIGHT")) t->setText("BRIGHTNESS");
@@ -482,7 +479,7 @@ void MainWindow::toggleLanguage() {
         if(m_charts[3]) m_charts[3]->setTitle("Ciśnienie [hPa]");
 
         for(auto t : titles) {
-            QString txt = t->text().toUpper(); // Poprawione na toUpper()
+            QString txt = t->text().toUpper(); 
             if(txt.contains("TEMPERATUR")) t->setText("TEMPERATURA");
             else if(txt.contains("PRESSURE") || txt.contains("CIŚN")) t->setText("CIŚNIENIE");
             else if(txt.contains("BRIGHTNESS") || txt.contains("JASN")) t->setText("JASNOŚĆ");

@@ -1,3 +1,10 @@
+/**
+ * @file MainWindow.hpp
+ * @brief Główny interfejs graficzny aplikacji monitorującej stan rośliny.
+ * @author Michał Papierzański
+ * @date 2026-05-05
+ */
+
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
@@ -16,7 +23,6 @@
 #include <QScrollArea>
 #include <QScrollBar>
 
-// Qt Charts
 #include <QtCharts/QChartView>
 #include <QtCharts/QLineSeries>
 #include <QtCharts/QDateTimeAxis>
@@ -28,65 +34,144 @@
 
 QT_USE_NAMESPACE
 
+/**
+ * @class MainWindow
+ * @brief Główna klasa okna aplikacji odpowiedzialna za wizualizację danych z sensorów.
+ * 
+ * Klasa integruje dane z obiektu PlantData, zarządza połączeniem szeregowym (SerialHandler)
+ * oraz prezentuje wyniki w formie graficznych kart, interaktywnych wykresów i dynamicznego
+ * awatara stanu rośliny. Obsługuje również archiwizację danych do plików CSV.
+ */
 class MainWindow : public QMainWindow {
     Q_OBJECT
 
 public:
+    /**
+     * @brief Konstruktor głównego okna.
+     * @param data Wskaźnik do obiektu przechowującego aktualne dane pomiarowe.
+     * @param parent Wskaźnik do obiektu rodzica (Qt).
+     */
     MainWindow(PlantData *data, QWidget *parent = nullptr);
+
+    /**
+     * @brief Domyślny destruktor.
+     */
     ~MainWindow() = default;
 
 public slots:
+    /**
+     * @brief Aktualizuje zakres i skalowanie osi na wykresach historycznych.
+     * Dostosowuje widok do okna czasowego zdefiniowanego przez pasek przewijania.
+     */
     void updateChartsWindow();
+
+    /**
+     * @brief Pobiera najnowsze dane z obiektu PlantData i odświeża interfejs.
+     * Aktualizuje etykiety tekstowe, wywołuje przeliczenie grafiki oraz dodaje punkty do wykresów.
+     */
     void updateDisplay();
+
+    /**
+     * @brief Zapisuje aktualne parametry (temp, ciśnienie, światło, wilgotność) do pliku plant_history.csv.
+     * Wywoływana automatycznie przez timer co 60 sekund.
+     */
     void saveToArchive();
+
+    /**
+     * @brief Czyści historię pomiarów w interfejsie oraz nadpisuje plik CSV pustym nagłówkiem.
+     */
     void clearHistory();
+
+    /**
+     * @brief Obsługuje wyświetlanie dymka (tooltip) z wartością po najechaniu na punkt na wykresie.
+     * @param point Współrzędne punktu na wykresie.
+     * @param state Stan najechania (true - kursor nad punktem).
+     */
     void showPointValue(const QPointF &point, bool state);
+
+    /**
+     * @brief Wczytuje dane historyczne z pliku CSV przy starcie aplikacji i wypełnia nimi wykresy.
+     */
     void loadHistoryFromCSV();
+
+    /**
+     * @brief Przełącza język interfejsu pomiędzy polskim a angielskim (etykiety kart, zakładki, wykresy).
+     */
     void toggleLanguage();
 
 protected:
+    /**
+     * @brief Przeciążona metoda obsługująca zmianę rozmiaru okna.
+     * Dynamicznie przelicza wielkość czcionek i ikon, aby zachować responsywność interfejsu.
+     * @param event Obiekt zdarzenia zmiany rozmiaru.
+     */
     void resizeEvent(QResizeEvent *event) override;
+
+    /**
+     * @brief Aktualizuje grafikę awatara rośliny oraz kolorystykę ikon na podstawie progów alarmowych.
+     * Zmienia stan awatara (np. na 'hot', 'dry', 'dark') w zależności od warunków środowiskowych.
+     */
     void updateGraphics();
 
 private:
+    /**
+     * @brief Inicjalizuje i układa elementy na głównej zakładce (Dashboard).
+     */
     void setupDashboard();
+
+    /**
+     * @brief Inicjalizuje sekcję statystyk, tworzy wykresy QtCharts i konfiguruje ich osie.
+     */
     void setupStats();
+
+    /**
+     * @brief Tworzy ustandaryzowany widżet karty dla pojedynczego parametru.
+     * @param title Tytuł wyświetlany na górze karty.
+     * @param icon Wskaźnik do etykiety z ikoną (opcjonalnie).
+     * @param value Wskaźnik do etykiety, w której będzie wyświetlana wartość.
+     * @return QWidget* Gotowy, ostylowany widżet karty.
+     */
     QWidget* createCard(const QString &title, QLabel *icon, QLabel *value);
 
-    SerialHandler *serialManager;
-    PlantData *plantData;
-    QTimer *archiveTimer;
-    QTimer *m_portCheckTimer;
+    // Zarządzanie danymi i komunikacją
+    SerialHandler *serialManager; ///< Menadżer komunikacji przez port szeregowy.
+    PlantData *plantData;         ///< Model danych z sensorów.
+    QTimer *archiveTimer;         ///< Timer wyzwalający zapis do CSV.
+    QTimer *m_portCheckTimer;     ///< Timer monitorujący stan połączenia.
 
-    int m_measurementCounter = 0;
+    int m_measurementCounter = 0; ///< Licznik wykonanych pomiarów.
 
-    QTabWidget *m_tabs;
-    QWidget *m_dashboardPage;
-    QWidget *m_statsPage;
+    // Elementy struktury UI
+    QTabWidget *m_tabs;           ///< Główny widżet zakładek.
+    QWidget *m_dashboardPage;     ///< Strona główna z podglądem na żywo.
+    QWidget *m_statsPage;         ///< Strona z wykresami historycznymi.
 
-    QLabel *m_sunIcon;
-    QLabel *m_waterIcon;
-    QLabel *m_thermometerIcon;
-    QLabel *m_pressureIcon;
-    QLabel *m_plantAvatar;
+    // Ikony i wizualizacja
+    QLabel *m_sunIcon;            ///< Ikona natężenia światła.
+    QLabel *m_waterIcon;          ///< Ikona wilgotności (skalowana dynamicznie).
+    QLabel *m_thermometerIcon;    ///< Ikona temperatury (zmieniająca kolor).
+    QLabel *m_pressureIcon;       ///< Ikona ciśnienia.
+    QLabel *m_plantAvatar;        ///< Główny obrazek stanu rośliny.
 
-    QPushButton *m_langBtn;
+    QPushButton *m_langBtn;       ///< Przycisk zmiany języka.
 
+    // Zasoby graficzne
     QPixmap sunPixmap, waterPixmap, thermoPixmap, pressurePixmap;
     QPixmap plantPixmap, plantHotPixmap, plantColdPixmap;
     QPixmap plantDryPixmap, plantWetPixmap, plantDarkPixmap;
 
-    QChartView *m_chartViews[4];
-    QChart *m_charts[4];
-    QLineSeries *m_series[4];
-    QDateTimeAxis *m_axesX[4];
-    QValueAxis *m_axesY[4];
+    // Komponenty wykresów
+    QChartView *m_chartViews[4];  ///< Tablica widoków dla 4 głównych wykresów.
+    QChart *m_charts[4];          ///< Obiekty wykresów (Temp, Wilg, Światło, Ciśn).
+    QLineSeries *m_series[4];     ///< Serie danych czasowych.
+    QDateTimeAxis *m_axesX[4];    ///< Osie czasu (X).
+    QValueAxis *m_axesY[4];       ///< Osie wartości (Y).
 
-    QPushButton *m_clearBtn;
-    QLabel *m_tooltipLabel;
+    QPushButton *m_clearBtn;      ///< Przycisk czyszczenia historii.
+    QLabel *m_tooltipLabel;       ///< Etykieta wyświetlająca szczegóły punktu na wykresie.
 
-    QScrollBar *m_chartScroll;
-    bool m_autoScroll = true;
+    QScrollBar *m_chartScroll;    ///< Pasek przewijania osi czasu na wykresach.
+    bool m_autoScroll = true;     ///< Flaga określająca, czy wykres ma automatycznie śledzić najnowsze dane.
 };
 
-#endif
+#endif // MAINWINDOW_H
