@@ -292,15 +292,20 @@ void MainWindow::updateChartsWindow() {
         
         double minV = 99999, maxV = -99999;
         bool found = false;
-        for(auto pt : m_series[i]->points()) {
+        const auto points = m_series[i]->points();
+        
+        for(const auto &pt : points) {
             if(pt.x() >= startTime.toMSecsSinceEpoch() && pt.x() <= endTime.toMSecsSinceEpoch()) {
                 minV = std::min(minV, pt.y());
                 maxV = std::max(maxV, pt.y());
                 found = true;
             }
         }
+
         if(found && m_axesY[i]) {
-            double margin = (maxV - minV) * 0.15 + 0.5;
+            double rangeDiff = maxV - minV;
+            double margin = (rangeDiff * 0.20) + 1.0; 
+            
             m_axesY[i]->setRange(minV - margin, maxV + margin);
         }
     }
