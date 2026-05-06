@@ -1,36 +1,52 @@
-
-DOXYFILE_ENCODING      = UTF-8
 PROJECT_NAME           = "System monitorowania rośliny"
 PROJECT_NUMBER         = 1.0
 PROJECT_BRIEF          = "Monitorowanie wilgotności, temperatury i nasłonecznienia"
 OUTPUT_DIRECTORY       = ./doc
 OUTPUT_LANGUAGE        = Polish
+DOXYFILE_ENCODING      = UTF-8
+
+INPUT                  = .
+FILE_PATTERNS          = *.c *.cpp *.h *.hpp *.ino *.md *.dox
+RECURSIVE              = YES
+EXCLUDE                = ./doc
+FULL_PATH_NAMES        = NO
+STRIP_FROM_PATH        = .
+
+
 EXTRACT_ALL            = YES
 EXTRACT_PRIVATE        = YES
 EXTRACT_STATIC         = YES
 EXTRACT_LOCAL_CLASSES  = YES
-
-FILE_PATTERNS          = *.c \
-                         *.cpp \
-                         *.h \
-                         *.hpp \
-                         *.ino
-
-RECURSIVE              = YES
-
-INPUT                  = .
-EXCLUDE                = ./doc
+SOURCE_BROWSER         = YES
+INLINE_SOURCES         = YES
+REFERENCED_BY_RELATION = YES
+REFERENCES_RELATION    = YES
+ALPHABETICAL_INDEX     = YES
 
 
 GENERATE_HTML          = YES
 HTML_OUTPUT            = html
 HTML_FILE_EXTENSION    = .html
-GENERATE_LATEX         = NO
-HAVE_DOT               = YES
-
-SOURCE_BROWSER         = YES
-INLINE_SOURCES         = NO
-STRIP_CODE_COMMENTS    = NO
-REFERENCED_BY_RELATION = YES
-REFERENCES_RELATION    = YES
 GENERATE_TREEVIEW      = YES
+HTML_DYNAMIC_SECTIONS  = YES
+
+HAVE_DOT               = YES
+DOT_NUM_THREADS        = 4
+UML_LOOK               = YES
+TEMPLATE_RELATIONS     = YES
+CALL_GRAPH             = YES
+CALLER_GRAPH           = YES
+GRAPHICAL_HIERARCHY    = YES
+DIRECTORY_GRAPH        = YES
+DOT_IMAGE_FORMAT       = svg
+INTERACTIVE_SVG        = YES
+
+
+GENERATE_LATEX         = NO
+
+MARKDOWN_SUPPORT       = YES
+USE_MDRIP              = YES
+
+IMAGE_PATH             = ./images
+AUTOLINK_SUPPORT = YES
+

@@ -48,12 +48,6 @@ MainWindow::MainWindow(PlantData *data, QWidget *parent)
     setupStats();   
     loadHistoryFromCSV();
 
-    // // Archiwizacja co 10 sekund
-    // archiveTimer = new QTimer(this);
-    // connect(archiveTimer, &QTimer::timeout, this, &MainWindow::saveToArchive);
-    // archiveTimer->start(10000);
-
-    // Serial Port
     serialManager = new SerialHandler(plantData, this);
     connect(serialManager, &SerialHandler::dataUpdated, this, &MainWindow::updateDisplay);
 
@@ -113,6 +107,8 @@ void MainWindow::setupDashboard() {
     m_pressureIcon = new QLabel;
     m_sunIcon = new QLabel;
     m_waterIcon = new QLabel;
+    m_waterIcon->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    m_waterIcon->setAlignment(Qt::AlignCenter);
     m_plantAvatar = new QLabel;
 
     QLabel *tempValue = new QLabel("--"); tempValue->setObjectName("tempValue");
@@ -318,7 +314,6 @@ void MainWindow::updateGraphics() {
     double l = plantData->get_Lux();
     int soilPercent = std::clamp((626 - plantData->get_SoilMoisture()) * 100 / (626 - 347), 0, 100);
 
-    // Awatar
     QPixmap *avatar = &plantPixmap;
     if (soilPercent < 20) avatar = &plantDryPixmap;
     else if (soilPercent > 85) avatar = &plantWetPixmap;
@@ -348,13 +343,14 @@ void MainWindow::updateGraphics() {
 
     if (!pressurePixmap.isNull()) m_pressureIcon->setPixmap(pressurePixmap.scaled(baseSize, baseSize, Qt::KeepAspectRatio, Qt::SmoothTransformation));
     if (!waterPixmap.isNull() && m_waterIcon) {
-
-    double scaleFactor = 0.7 + (soilPercent / 100.0) * 0.8; 
-    int dynamicSize = static_cast<int>(baseSize * scaleFactor);
-    
-    m_waterIcon->setPixmap(waterPixmap.scaled(dynamicSize, dynamicSize, 
-                           Qt::KeepAspectRatio, Qt::SmoothTransformation));
-}
+        int slotSize = m_waterIcon->width(); 
+        double scaleFactor = 0.2 + (soilPercent / 100.0) * 0.75; 
+        
+        int dynamicSize = static_cast<int>(slotSize * scaleFactor);
+        
+        m_waterIcon->setPixmap(waterPixmap.scaled(dynamicSize, dynamicSize, 
+                               Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    }
     if (!sunPixmap.isNull()) {
         int alpha = std::clamp(static_cast<int>(50 + (l * 205 / 1000.0)), 50, 255);
         QPixmap sPix = sunPixmap.scaled(baseSize, baseSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
@@ -425,8 +421,8 @@ void MainWindow::saveToArchive() {
 void MainWindow::resizeEvent(QResizeEvent *event) {
     QMainWindow::resizeEvent(event);
 
-  
     int baseWidth = width();
+
     int valueFontSize = std::clamp(baseWidth / 35, 18, 45);
     int titleFontSize = std::clamp(baseWidth / 80, 10, 18); 
 
@@ -440,12 +436,19 @@ void MainWindow::resizeEvent(QResizeEvent *event) {
         }
     }
 
-    
     QList<QLabel*> titles = m_dashboardPage->findChildren<QLabel*>("cardTitle");
     for (QLabel* l : titles) {
         l->setFont(tFont);
     }
+   
+    int iconSlotSize = std::clamp(baseWidth / 15, 64, 180); 
     
+    m_thermometerIcon->setFixedSize(iconSlotSize, iconSlotSize);
+    m_pressureIcon->setFixedSize(iconSlotSize, iconSlotSize);
+    m_sunIcon->setFixedSize(iconSlotSize, iconSlotSize);
+    m_waterIcon->setFixedSize(iconSlotSize, iconSlotSize);
+
+
     updateGraphics(); 
 }
 

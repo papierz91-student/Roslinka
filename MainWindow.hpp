@@ -1,8 +1,8 @@
 /**
- * @file MainWindow.hpp
- * @brief Główny interfejs graficzny aplikacji monitorującej stan rośliny.
- * @author Michał Papierzański
- * @date 2026-05-05
+ * \file MainWindow.hpp
+ * \brief Główny interfejs graficzny aplikacji monitorującej stan rośliny.
+ * \author Michał Papierzański
+ * \date 2026-05-05
  */
 
 #ifndef MAINWINDOW_H
@@ -35,101 +35,108 @@
 QT_USE_NAMESPACE
 
 /**
- * @class MainWindow
- * @brief Główna klasa okna aplikacji odpowiedzialna za wizualizację danych z sensorów.
+ * \class MainWindow
+ * \brief Główna klasa okna aplikacji odpowiedzialna za wizualizację danych z sensorów.
  * 
- * Klasa integruje dane z obiektu PlantData, zarządza połączeniem szeregowym (SerialHandler)
- * oraz prezentuje wyniki w formie graficznych kart, interaktywnych wykresów i dynamicznego
- * awatara stanu rośliny. Obsługuje również archiwizację danych do plików CSV.
+ * Klasa integruje dane z obiektu \link PlantData PlantData \endlink, zarządza połączeniem 
+ * szeregowym (\link SerialHandler SerialHandler \endlink) oraz prezentuje wyniki w formie 
+ * graficznych kart, interaktywnych wykresów i dynamicznego awatara stanu rośliny. 
+ * Obsługuje również archiwizację danych do plików CSV.
  */
 class MainWindow : public QMainWindow {
     Q_OBJECT
 
 public:
     /**
-     * @brief Konstruktor głównego okna.
-     * @param data Wskaźnik do obiektu przechowującego aktualne dane pomiarowe.
-     * @param parent Wskaźnik do obiektu rodzica (Qt).
+     * \brief Konstruktor głównego okna.
+     * \param[in] data - Wskaźnik do obiektu przechowującego aktualne dane pomiarowe.
+     * \param[in] parent - Wskaźnik do obiektu rodzica (Qt).
      */
     MainWindow(PlantData *data, QWidget *parent = nullptr);
 
     /**
-     * @brief Domyślny destruktor.
+     * \brief Domyślny destruktor klasy MainWindow.
      */
     ~MainWindow() = default;
 
 public slots:
     /**
-     * @brief Aktualizuje zakres i skalowanie osi na wykresach historycznych.
+     * \brief Aktualizuje zakres i skalowanie osi na wykresach historycznych.
+     * 
      * Dostosowuje widok do okna czasowego zdefiniowanego przez pasek przewijania.
      */
     void updateChartsWindow();
 
     /**
-     * @brief Pobiera najnowsze dane z obiektu PlantData i odświeża interfejs.
+     * \brief Pobiera najnowsze dane z obiektu PlantData i odświeża interfejs.
+     * 
      * Aktualizuje etykiety tekstowe, wywołuje przeliczenie grafiki oraz dodaje punkty do wykresów.
      */
     void updateDisplay();
 
     /**
-     * @brief Zapisuje aktualne parametry (temp, ciśnienie, światło, wilgotność) do pliku plant_history.csv.
-     * Wywoływana automatycznie przez timer co 60 sekund.
+     * \brief Zapisuje aktualne parametry do pliku plant_history.csv.
+     * 
+     * Archiwizuje temperaturę, ciśnienie, światło i wilgotność. Wywoływana 
+     * automatycznie przez timer co 60 sekund.
      */
     void saveToArchive();
 
     /**
-     * @brief Czyści historię pomiarów w interfejsie oraz nadpisuje plik CSV pustym nagłówkiem.
+     * \brief Czyści historię pomiarów w interfejsie oraz nadpisuje plik CSV pustym nagłówkiem.
      */
     void clearHistory();
 
     /**
-     * @brief Obsługuje wyświetlanie dymka (tooltip) z wartością po najechaniu na punkt na wykresie.
-     * @param point Współrzędne punktu na wykresie.
-     * @param state Stan najechania (true - kursor nad punktem).
+     * \brief Obsługuje wyświetlanie dymka (tooltip) z wartością po najechaniu na punkt na wykresie.
+     * \param[in] point - Współrzędne punktu na wykresie.
+     * \param[in] state - Stan najechania.
+     * \retval true - kursor znajduje się nad punktem.
+     * \retval false - kursor znajduje się poza punktem.
      */
     void showPointValue(const QPointF &point, bool state);
 
     /**
-     * @brief Wczytuje dane historyczne z pliku CSV przy starcie aplikacji i wypełnia nimi wykresy.
+     * \brief Wczytuje dane historyczne z pliku CSV przy starcie aplikacji i wypełnia nimi wykresy.
      */
     void loadHistoryFromCSV();
 
     /**
-     * @brief Przełącza język interfejsu pomiędzy polskim a angielskim (etykiety kart, zakładki, wykresy).
+     * \brief Przełącza język interfejsu pomiędzy polskim a angielskim.
+     * 
+     * Zmienia etykiety kart, nagłówki zakładek oraz opisy osi wykresów.
      */
     void toggleLanguage();
 
 protected:
     /**
-     * @brief Przeciążona metoda obsługująca zmianę rozmiaru okna.
+     * \brief Przeciążona metoda obsługująca zmianę rozmiaru okna.
+     * \param[in] event - Obiekt zdarzenia zmiany rozmiaru zawierający nowe wymiary okna.
+     * 
      * Dynamicznie przelicza wielkość czcionek i ikon, aby zachować responsywność interfejsu.
-     * @param event Obiekt zdarzenia zmiany rozmiaru.
      */
     void resizeEvent(QResizeEvent *event) override;
 
     /**
-     * @brief Aktualizuje grafikę awatara rośliny oraz kolorystykę ikon na podstawie progów alarmowych.
+     * \brief Aktualizuje grafikę awatara rośliny oraz kolorystykę ikon na podstawie progów alarmowych.
+     * 
      * Zmienia stan awatara (np. na 'hot', 'dry', 'dark') w zależności od warunków środowiskowych.
      */
     void updateGraphics();
 
 private:
-    /**
-     * @brief Inicjalizuje i układa elementy na głównej zakładce (Dashboard).
-     */
+    /** \brief Inicjalizuje i układa elementy na głównej zakładce (Dashboard). */
     void setupDashboard();
 
-    /**
-     * @brief Inicjalizuje sekcję statystyk, tworzy wykresy QtCharts i konfiguruje ich osie.
-     */
+    /** \brief Inicjalizuje sekcję statystyk, tworzy wykresy QtCharts i konfiguruje ich osie. */
     void setupStats();
 
     /**
-     * @brief Tworzy ustandaryzowany widżet karty dla pojedynczego parametru.
-     * @param title Tytuł wyświetlany na górze karty.
-     * @param icon Wskaźnik do etykiety z ikoną (opcjonalnie).
-     * @param value Wskaźnik do etykiety, w której będzie wyświetlana wartość.
-     * @return QWidget* Gotowy, ostylowany widżet karty.
+     * \brief Tworzy ustandaryzowany widżet karty dla pojedynczego parametru.
+     * \param[in] title - Tytuł wyświetlany na górze karty.
+     * \param[in,out] icon - Wskaźnik do etykiety z ikoną.
+     * \param[in,out] value - Wskaźnik do etykiety, w której będzie wyświetlana wartość.
+     * \return Wskaźnik do gotowego, ostylowanego obiektu QWidget reprezentującego kartę.
      */
     QWidget* createCard(const QString &title, QLabel *icon, QLabel *value);
 
@@ -171,7 +178,9 @@ private:
     QLabel *m_tooltipLabel;       ///< Etykieta wyświetlająca szczegóły punktu na wykresie.
 
     QScrollBar *m_chartScroll;    ///< Pasek przewijania osi czasu na wykresach.
-    bool m_autoScroll = true;     ///< Flaga określająca, czy wykres ma automatycznie śledzić najnowsze dane.
+    
+    /** \brief Flaga określająca, czy wykres ma automatycznie śledzić najnowsze dane. */
+    bool m_autoScroll = true;     
 };
 
 #endif // MAINWINDOW_H
