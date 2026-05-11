@@ -78,7 +78,7 @@ public slots:
      * \brief Zapisuje aktualne parametry do pliku plant_history.csv.
      * 
      * Archiwizuje temperaturę, ciśnienie, światło i wilgotność. Wywoływana 
-     * automatycznie przez timer co 60 sekund.
+     * w momencie dodawania danych do wykresu.
      */
     void saveToArchive();
 
@@ -143,7 +143,6 @@ private:
     // Zarządzanie danymi i komunikacją
     SerialHandler *serialManager; ///< Menadżer komunikacji przez port szeregowy.
     PlantData *plantData;         ///< Model danych z sensorów.
-    QTimer *archiveTimer;         ///< Timer wyzwalający zapis do CSV.
     QTimer *m_portCheckTimer;     ///< Timer monitorujący stan połączenia.
 
     int m_measurementCounter = 0; ///< Licznik wykonanych pomiarów.

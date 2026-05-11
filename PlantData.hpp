@@ -29,7 +29,7 @@ public:
      */
     PlantData() : temperature(0.0), pressure(0.0), lux(0.0), soilMoisture(0) {}
 
-    /** \name Sety (Metody modyfikujące)
+    /** \name Settery (Metody modyfikujące)
      * Metody wykorzystywane głównie przez SerialHandler do aktualizacji modelu.
      */
     ///@{
@@ -59,7 +59,7 @@ public:
     void set_SoilMoisture(int moisture) { soilMoisture = moisture; }
     ///@}
 
-    /** \name Gety (Metody dostępowe)
+    /** \name Gettery (Metody dostępowe)
      * Metody wykorzystywane przez interfejs użytkownika oraz moduł archiwizacji danych.
      */
     ///@{

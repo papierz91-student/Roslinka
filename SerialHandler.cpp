@@ -12,12 +12,9 @@ SerialHandler::SerialHandler(PlantData *model, QObject *parent)
     
     connect(serial, &QSerialPort::readyRead, this, &SerialHandler::readData);
 
-    // Poprawiona obsługa błędów (Sytuacje wyjątkowe)
     connect(serial, &QSerialPort::errorOccurred, this, [this](QSerialPort::SerialPortError error) {
-        // Ignorujemy brak błędu i błędy otwarcia (obsłużone w attemptConnection)
         if (error == QSerialPort::NoError || error == QSerialPort::OpenError) return;
 
-        // Reagujemy tylko na faktyczne zerwanie połączenia
         if (error == QSerialPort::ResourceError || error == QSerialPort::PermissionError) {
             if (serial->isOpen()) {
                 qDebug() << "Utracono połączenie fizyczne z urządzeniem.";
@@ -34,7 +31,6 @@ SerialHandler::SerialHandler(PlantData *model, QObject *parent)
 }
 
 void SerialHandler::attemptConnection() {
-    // Jeśli port jest już otwarty, nie rób nic
     if (serial->isOpen()) {
         reconnectTimer->stop();
         return;
@@ -42,11 +38,9 @@ void SerialHandler::attemptConnection() {
 
     const auto infos = QSerialPortInfo::availablePorts();
     for (const QSerialPortInfo &info : infos) {
-        // Detekcja portu (np. Arduino Uno R3[cite: 1])
         if (info.description().contains("Arduino") || info.portName().contains("ttyACM") || info.portName().contains("COM")) {
             
             serial->setPort(info);
-            // Ważne: Czyścimy stary stan błędu przed nową próbą
             serial->clearError(); 
 
             if (openPort(info.portName())) {
@@ -59,7 +53,6 @@ void SerialHandler::attemptConnection() {
 }
 
 bool SerialHandler::openPort(const QString &portName) {
-    // Parametry zgodne z protokołem komunikacyjnym[cite: 1]
     serial->setBaudRate(QSerialPort::Baud9600); 
     serial->setDataBits(QSerialPort::Data8);
     serial->setParity(QSerialPort::NoParity);
@@ -69,7 +62,6 @@ bool SerialHandler::openPort(const QString &portName) {
     return serial->open(QIODevice::ReadOnly);
 }
 
-// Reszta metod (readData, validateChecksum, parseLine) pozostaje bez zmian
 
 void SerialHandler::readData() {
     buffer.append(serial->readAll());

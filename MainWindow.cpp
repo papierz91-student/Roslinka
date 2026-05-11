@@ -387,10 +387,10 @@ void MainWindow::loadHistoryFromCSV() {
 
         qint64 ts = dt.toMSecsSinceEpoch();
 
-        if (m_series[0]) m_series[0]->append(ts, f[1].toDouble()); // temp
-        if (m_series[1]) m_series[1]->append(ts, f[4].toDouble()); // soil
-        if (m_series[2]) m_series[2]->append(ts, f[3].toDouble()); // lux
-        if (m_series[3]) m_series[3]->append(ts, f[2].toDouble()); // pressure
+        if (m_series[0]) m_series[0]->append(ts, f[1].toDouble()); 
+        if (m_series[1]) m_series[1]->append(ts, f[4].toDouble()); 
+        if (m_series[2]) m_series[2]->append(ts, f[3].toDouble()); 
+        if (m_series[3]) m_series[3]->append(ts, f[2].toDouble()); 
     }
 
     file.close();
